@@ -38,7 +38,7 @@ class Sieve:
         
         return primes[n]
     
-    def __nth_prime_limit(self, n: int) -> int:
+    def _nth_prime_limit(self, n: int) -> int:
         """
         Estimate the upper limit for the nth prime number (0-indexed)
 
