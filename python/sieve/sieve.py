@@ -5,10 +5,16 @@ class Sieve:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
-    # Calculate the Nth prime number (0-indexed from 2) using the Sieve of Eratosthenes
-    # See algorithm: https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
     def nth_prime(self, n: int) -> int:
-        limit = self.__nth_prime_limit(n + 1)
+        """
+        Calculate the Nth prime number (0-indexed from 2) using the Sieve of Eratosthenes
+        See algorithm: https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
+        """
+
+        if n < 0:
+            raise IndexError("n must be a non-negative integer")
+    
+        limit = self.__nth_prime_limit(n)
         self.logger.debug(f"Calculating the {n}th prime number with a limit of {limit}")
     
         # initialize the sieve
@@ -32,8 +38,13 @@ class Sieve:
         
         return primes[n]
     
-    # Estimate the upper limit for the nth prime number (1 indexed)
-    # approx upper bound for a prime via prime number theorem is n(ln(n) + ln(ln(n))) for n > 6
-    # see also: https://math.stackexchange.com/questions/1270814/bounds-for-n-th-prime
     def __nth_prime_limit(self, n: int) -> int:
+        """
+        Estimate the upper limit for the nth prime number (0-indexed)
+
+        approx upper bound for a prime via prime number theorem is n(ln(n) + ln(ln(n))) for n > 6
+        see also: https://math.stackexchange.com/questions/1270814/bounds-for-n-th-prime
+        """
+    
+        n = n + 1 # adjust to 1-indexed
         return int(n * (log(n) + log(log(n)))) + 1 if n >= 6 else 13
