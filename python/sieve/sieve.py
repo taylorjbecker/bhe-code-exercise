@@ -38,13 +38,18 @@ class Sieve:
         
         return primes[n]
     
-    def _nth_prime_limit(self, n: int) -> int:
+    def _nth_prime_range(self, n: int) -> range:
         """
-        Estimate the upper limit for the nth prime number (0-indexed)
+        Estimate the range for the nth prime number (0-indexed)
 
-        approx upper bound for a prime via prime number theorem is n(ln(n) + ln(ln(n))) for n > 6
-        see also: https://math.stackexchange.com/questions/1270814/bounds-for-n-th-prime
+        approx bounds for n >= 6 are n(ln(n))+n(ln(ln(n)−1)) < Pn < n(ln(n) + ln(ln(n))) per prime number theorem
+        see also: https://en.wikipedia.org/wiki/Prime_number_theorem
         """
+
+        if n < 0:
+            raise IndexError("n must be a non-negative integer")
     
         n = n + 1 # adjust to 1-indexed
-        return int(n * (log(n) + log(log(n)))) + 1 if n >= 6 else 13
+        lower_bound = max(int(n * log(n) + n * (log(log(n)) - 1)), 2)
+        upper_bound = max(int(n * (log(n) + log(log(n)))) + 1, 13)
+        return range(lower_bound, upper_bound)
