@@ -1,5 +1,5 @@
 import logging
-from math import log
+from math import log, isqrt
 
 class Sieve:
     def __init__(self) -> None:
@@ -17,20 +17,36 @@ class Sieve:
         limit = self._nth_prime_limit(n)
         self.logger.debug(f"Calculating the {n}th prime number with a limit of {limit}")
     
-        # initialize the sieve
-        sieve = [True] * limit
-        sieve[0] = sieve[1] = False # 0 and 1 aren't prime
+        chunk_size = min(limit, 10000000)
+        current_position = 0
+        primes = []
+        while (limit > current_position):
+            # initialize the sieve chunk
+            sieve = [True] * chunk_size
+            sieve[0] = False # first element in chunk of even size is never prime
 
-        # from 2 to sqrt(limit)
-        for i in range(2, int(limit ** 0.5) + 1):
-            # if i is prime
-            if sieve[i]:
-                # mark all multiples of i as not prime (starting at i^2)
-                for multiple in range(i * i, limit, i):
-                    sieve[multiple] = False
+            # 1 isn't prime
+            if (current_position == 0):
+                sieve[1] = False
 
-        # assemble all primes from the sieve (`True` values)
-        primes = [num for num, is_prime in enumerate(sieve) if is_prime]
+            # mark all multiples of previously found primes in the current chunk as not prime
+            for prime in primes:
+                for multiple in range((current_position // prime + 1) * prime, chunk_size + current_position, prime):
+                    sieve[multiple - current_position] = False
+
+            # from current position to current chunk limit or sqrt(limit)
+            for current in range(max(current_position, 2), min(isqrt(limit) + 1, chunk_size + current_position)):
+                # if i is prime
+                if sieve[current - current_position]:
+                    # mark all multiples of i as not prime (starting at i^2)
+                    for multiple in range(current * current, chunk_size + current_position, current):
+                        sieve[multiple - current_position] = False
+
+            # assemble all primes from the sieve chunk (`True` values)
+            chunk_primes = [num + current_position for num, is_prime in enumerate(sieve) if is_prime]
+            primes.extend(chunk_primes)
+
+            current_position += chunk_size
 
         # log the primes found, within some reasonable limit
         if (n < 100):
