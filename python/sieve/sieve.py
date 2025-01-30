@@ -14,7 +14,7 @@ class Sieve:
         if n < 0:
             raise IndexError("n must be a non-negative integer")
     
-        limit = self.__nth_prime_limit(n)
+        limit = self._nth_prime_limit(n)
         self.logger.debug(f"Calculating the {n}th prime number with a limit of {limit}")
     
         # initialize the sieve
